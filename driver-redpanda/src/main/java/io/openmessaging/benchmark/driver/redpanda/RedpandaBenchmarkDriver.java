@@ -90,8 +90,9 @@ public class RedpandaBenchmarkDriver implements BenchmarkDriver {
             ListTopicsResult result = admin.listTopics();
             try {
                 Set<String> topics = result.names().get();
+                log.info("Found topics: {}", topics);
                 // Delete all existing topics matching the prefix
-                Set<String> topicsToDelete = new HashSet<String>();
+                Set<String> topicsToDelete = new HashSet<>();
                 String topicPrefix = getTopicNamePrefix();
                 for (String topic : topics) {
                     if (topic.toString().startsWith(topicPrefix)) {
@@ -99,8 +100,11 @@ public class RedpandaBenchmarkDriver implements BenchmarkDriver {
                     }
                 }
                 if (topicsToDelete.size() > 0) {
+                    log.info("Deleting topics: {}", topicsToDelete);
                     DeleteTopicsResult deletes = admin.deleteTopics(topicsToDelete);
                     deletes.all().get();
+                } else {
+                    log.info("No topics to delete");
                 }
             } catch (ExecutionException e) {
                 if (e.getCause() instanceof UnknownTopicOrPartitionException) {
